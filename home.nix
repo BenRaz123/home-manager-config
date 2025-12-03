@@ -1,31 +1,56 @@
-# vim: set ts=2 sw=2:
-
 { config, pkgs, ... }:
 
+let
+  VERSION = "25.05";
+  USER = "ben";
+  TAB_WIDTH = 4;
+  nixvim = import (
+    builtins.fetchGit {
+      url = "https://github.com/nix-community/nixvim";
+      ref = if VERSION != "unstable" then "nixos-${VERSION}" else "main";
+    }
+  );
+in
 {
-  home.username = "ben";
-  home.homeDirectory = "/home/ben";
+  imports = [
+    nixvim.homeModules.nixvim
+  ];
 
-  home.stateVersion = "25.05";
+  home.username = USER;
+  home.homeDirectory = "/home/${USER}";
 
-	programs.bash = { 
-		enable = true;
-		shellAliases = {
-			gm = "mutt -F ~/.mutt/school.muttrc";
-			Gm = "mutt -F ~/.mutt/personal.muttrc";
-		};
-		sessionVariables = {
-			COLOR_START = ''\e[92m'';
-			COLOR_END = ''\e[0m'';
-			PS1 = ''[HM2 \u@\h $COLOR_START\w$COLOR_END]\$ '';
-		};
-		initExtra = ''set -o vi'';
-	};
+  home.stateVersion = VERSION;
 
-  home.packages = [ ];
+  programs.git = {
+    enable = true;
+    userName = "BenRaz123";
+    userEmail = "ben.raz2008@gmail.com";
+  };
 
-	# in the form "<conf file>".text = "x"
-  home.file = { };
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      gm = "mutt -F ~/.mutt/school.muttrc";
+      Gm = "mutt -F ~/.mutt/personal.muttrc";
+    };
+    sessionVariables = {
+      COLOR_START = ''\e[92m'';
+      COLOR_END = ''\e[0m'';
+      PS1 = ''[HM2 \u@\h $COLOR_START\w$COLOR_END]\$ '';
+    };
+    initExtra = ''set -o vi'';
+  };
+
+  programs.nixvim = {
+    enable = true;
+    defaultEditor = true;
+    clipboard.register = "unnamedplus";
+  } // import (./nixvim) { inherit TAB_WIDTH pkgs; };
+
+  home.packages = [ pkgs.nixfmt-rfc-style ];
+
+  # in the form "<conf file>".text = "x"
+  home.file = {};
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
@@ -44,8 +69,7 @@
   #  /etc/profiles/per-user/ben/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-		EDITOR = "nvim";
-		MANPAGER = "nvim +Man!";
+    MANPAGER = "nvim +Man!";
   };
 
   # Let Home Manager install and manage itself.
