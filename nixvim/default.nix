@@ -22,6 +22,10 @@ in
     shiftwidth = TAB_WIDTH;
     number = true;
     relativenumber = true;
+	signcolumn = "yes";
+  };
+  globals = {
+	mapleader = " ";
   };
   extraPlugins = [
     (pkgs.vimUtils.buildVimPlugin {
@@ -31,22 +35,11 @@ in
       };
     })
   ];
+  plugins = {
+    lsp = import ./lsp.nix;
+  }
+  // (import ./plugins.nix);
   autoCmd = (import ./autocmds.nix) { inherit lib; };
   keymaps = (import ./keymaps.nix) { inherit lib; };
-  extraConfigLua = ''
-require("gitsigns").setup {
-	signs = {
-		add = { text = "+" },
-		change = { text = "/" },
-		delete = { text = "-" },
-	},
-	signs_staged = {
-		add = { text = "+" },
-		change = { text = "/" },
-		delete = { text = "-" },
-	}
-}
-      vim.opt.clipboard = { 'unnamed', 'unnamedplus' }
-    vim.cmd [[ color retrobox ]]
-  '';
+  extraConfigLua = builtins.readFile ./extraConfig.lua;
 }

@@ -23,8 +23,10 @@ in
 
   programs.git = {
     enable = true;
-    userName = "BenRaz123";
-    userEmail = "ben.raz2008@gmail.com";
+    settings = {
+      user.name = "BenRaz123";
+      user.email = "ben.raz2008@gmail.com";
+    };
   };
 
   programs.bash = {
@@ -45,12 +47,16 @@ in
     enable = true;
     defaultEditor = true;
     clipboard.register = "unnamedplus";
-  } // import (./nixvim) { inherit TAB_WIDTH pkgs; };
+  }
+  // import (./nixvim) { inherit pkgs TAB_WIDTH; };
 
-  home.packages = [ pkgs.nixfmt-rfc-style ];
+  home.packages = with pkgs; [
+    nixfmt-rfc-style
+  ];
 
   # in the form "<conf file>".text = "x"
-  home.file = {};
+  home.file = {
+  };
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
