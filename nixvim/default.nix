@@ -1,5 +1,6 @@
 {
   pkgs ? import <nixpkgs> { },
+  lib ? pkgs.lib,
   TAB_WIDTH,
 }:
 
@@ -22,19 +23,12 @@ in
     shiftwidth = TAB_WIDTH;
     number = true;
     relativenumber = true;
-	signcolumn = "yes";
+    signcolumn = "yes";
   };
   globals = {
-	mapleader = " ";
+    mapleader = " ";
   };
-  extraPlugins = [
-    (pkgs.vimUtils.buildVimPlugin {
-      name = "gitsigns";
-      src = builtins.fetchGit {
-        url = "https://github.com/lewis6991/gitsigns.nvim";
-      };
-    })
-  ];
+  extraPlugins = (import ./extra_plugins.nix) { inherit pkgs lib; } ;
   plugins = {
     lsp = import ./lsp.nix;
   }

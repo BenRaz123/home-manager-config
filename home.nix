@@ -47,8 +47,7 @@ in
     enable = true;
     defaultEditor = true;
     clipboard.register = "unnamedplus";
-  }
-  // import (./nixvim) { inherit pkgs TAB_WIDTH; };
+  } // import (./nixvim) { inherit pkgs TAB_WIDTH; };
 
   home.packages = with pkgs; [
     nixfmt-rfc-style
@@ -56,6 +55,7 @@ in
 
   # in the form "<conf file>".text = "x"
   home.file = {
+    ".config/nix/nix.conf".text = "experimental-features = nix-command";
   };
 
   # Home Manager can also manage your environment variables through
@@ -80,4 +80,4 @@ in
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-}
+} 

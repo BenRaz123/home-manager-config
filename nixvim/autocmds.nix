@@ -16,6 +16,6 @@ with lib;
     vim.keymap.set("ia", ">f", "function", {buffer=args.buf})
   '')
   (mkAutoCmd "BufRead" "*.muttrc" "set ft=muttrc")
-  (mkAutoCmd "FileType" "mail" "WrapWidth 80 | set spell tw=0")
+  (mkAutoCmd "FileType" "mail" "Wrapwidth 80 | set spell tw=0")
   (mkAutoCmd "BufEnter" "*nix" "set tabstop=2 shiftwidth=2 expandtab")
 ]
