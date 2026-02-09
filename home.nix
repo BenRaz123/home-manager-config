@@ -1,13 +1,21 @@
-{ config, pkgs, ... }:
-
+{
+  config,
+  pkgs ? import <nixpkgs> { },
+  lib ? pkgs.lib,
+  ...
+}:
 let
-  VERSION = "25.05";
-  USER = "ben";
-  TAB_WIDTH = 4;
+  settings =
+    (lib.evalModules {
+      modules = [
+        ./settings/options.nix
+        ./settings/settings.nix
+      ];
+    }).config;
   nixvim = import (
     builtins.fetchGit {
       url = "https://github.com/nix-community/nixvim";
-      ref = if VERSION != "unstable" then "nixos-${VERSION}" else "main";
+      ref = if settings.VERSION != "unstable" then "nixos-${settings.VERSION}" else "main";
     }
   );
 in
@@ -16,10 +24,10 @@ in
     nixvim.homeModules.nixvim
   ];
 
-  home.username = USER;
-  home.homeDirectory = "/home/${USER}";
+  home.username = settings.USER;
+  home.homeDirectory = "/home/${settings.USER}";
 
-  home.stateVersion = VERSION;
+  home.stateVersion = settings.VERSION;
 
   programs.git = {
     enable = true;
@@ -40,17 +48,25 @@ in
       COLOR_END = ''\e[0m'';
       PS1 = ''[HM2 \u@\h $COLOR_START\w$COLOR_END]\$ '';
     };
-    initExtra = ''set -o vi'';
+    initExtra = ''
+      export TZ=${settings.TZ}
+      export TZDIR=/usr/share/zoneinfo
+      set -o vi
+    '';
   };
 
   programs.nixvim = {
     enable = true;
     defaultEditor = true;
     clipboard.register = "unnamedplus";
-  } // import (./nixvim) { inherit pkgs TAB_WIDTH; };
+  }
+  // import (./nixvim) { inherit pkgs settings; };
 
   home.packages = with pkgs; [
     nixfmt-rfc-style
+    maestral
+    tmux
+    gh
   ];
 
   # in the form "<conf file>".text = "x"
@@ -76,8 +92,11 @@ in
   #
   home.sessionVariables = {
     MANPAGER = "nvim +Man!";
+    TZ = settings.TZ;
+    TZDIR = "/usr/share/zoneinfo";
+    X =5;
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-} 
+}

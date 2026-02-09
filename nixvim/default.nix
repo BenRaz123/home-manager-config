@@ -1,7 +1,8 @@
 {
   pkgs ? import <nixpkgs> { },
   lib ? pkgs.lib,
-  TAB_WIDTH,
+  settings ? {},
+  ...
 }:
 
 let
@@ -19,8 +20,8 @@ in
 {
   clipboard.register = "unnamedplus";
   opts = {
-    tabstop = TAB_WIDTH;
-    shiftwidth = TAB_WIDTH;
+    tabstop = settings.TAB_WIDTH;
+    shiftwidth = settings.TAB_WIDTH;
     number = true;
     relativenumber = true;
     signcolumn = "yes";
@@ -32,7 +33,7 @@ in
   plugins = {
     lsp = import ./lsp.nix;
   }
-  // (import ./plugins.nix);
+  // (import ./plugins.nix { inherit settings; });
   autoCmd = (import ./autocmds.nix) { inherit lib; };
   keymaps = (import ./keymaps.nix) { inherit lib; };
   extraConfigLua = builtins.readFile ./extraConfig.lua;

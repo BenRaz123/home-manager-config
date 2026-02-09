@@ -1,4 +1,33 @@
 {
+  settings ? { },
+  ...
+}:
+{
+  orgmode =
+    if settings.org.enable then
+      {
+        enable = true;
+        settings =
+          let
+            prefix = if settings.org.useDropbox then "~/Dropbox/Apps/MobileOrg" else "~/orgfiles";
+          in
+          {
+            org_agenda_files = "${prefix}/**/*";
+            org_default_notes_file = "${prefix}/refile.org";
+            org_capture_templates.p =
+              if settings.org.plannerCaptures != { } then
+                {
+                  description = "Planner";
+                  subtemplates = builtins.mapAttrs (
+                    _k: v: v // { target = "${prefix}/planner.org"; }
+                  ) settings.org.plannerCaptures;
+                }
+              else
+                { };
+          };
+      }
+    else
+      { };
   cmp = {
     enable = true;
     #autoload = true;
