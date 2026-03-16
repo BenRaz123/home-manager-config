@@ -8,7 +8,7 @@ c() {
 
 	[ -z "$1" ] && {
 		printf "\e[0m"
-		exit
+		return
 	}
 
 	for arg in "$@"; do
@@ -48,10 +48,10 @@ log_message() {
 	msg=$(printf "$(c $1):: $(c bold)$2$(c) %s" "$3")
 	if [[ "$3" =~ \.\.\.$ ]]; then
 		LAST_PRINTED="$msg"
-		printf "%s" "$msg"
+		printf "%s" "$msg" >&2
 		return
 	fi
-	printf "%s\n" "$msg"
+	printf "%s\n" "$msg" >&2
 }
 
 info() {
@@ -91,12 +91,21 @@ run() {
 }
 
 get_file() {
-	local prompt="$1"	
-	read -p "$(c bold magenta)$prompt>$(c) " res
-	if [ ! -f "$res" ]; then
-		error "file \"$res\" does not exist!"
-		get_file "$prompt"
-	fi
+	local prompt="$1"
+	local res
+
+	while true; do
+		read -p "$(c bold magenta)$prompt>$(c) " res
+		local expanded="$(eval echo "$res")"
+
+		if [ -f "$expanded" ]; then
+			echo "$expanded"
+			return
+		fi
+
+		err "file \"$expanded\" does not exist!"
+		echo
+	done
 }
 
 setup() {
@@ -110,23 +119,20 @@ setup() {
   info "importing key"
   local pub=$(get_file "Public Key Path")
   local priv=$(get_file "Secret Key Path")
-  read -p "Key ID> " id
+  read -p "$(c bold magenta)Key ID>$(c) " id
   gpg --import "$pub" "$priv"
-	info "setting trust to 5 on key"
-	gpg --command-fd 0 --edit-key "Ben Raz" <<EOF
-trust
-5
-y
-quit
-EOF
-	
-	if [ ! -d "$HOME/.password-store" ]; then
-		info "cloning benraz123/passwordstore"
-		git clone "https://github.com/benraz123/passwordstore" "$HOME/.password-store"
-	fi
-	pass init "$id"
 
-	info "done!"
+  info "setting trust to ultimate on key"
+  fingerprint=$(gpg --with-colons --fingerprint "$id" | awk -F: '/^fpr:/ {print $10; exit}')
+  echo "$fingerprint:6:" | gpg --import-ownertrust
+  
+  if [ ! -d "$HOME/.password-store" ]; then
+  	info "cloning benraz123/passwordstore"
+  	git clone "https://github.com/benraz123/passwordstore" "$HOME/.password-store"
+  fi
+  pass init "$id"
+  
+  info "done!"
 }
 
 check_for_cmd() {
