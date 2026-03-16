@@ -49,6 +49,7 @@ in
       PS1 = ''[HM2 \u@\h $COLOR_START\w$COLOR_END]\$ '';
     };
     initExtra = ''
+	. "$HOME/.nix-profile/etc/profile.d/nix.sh"
       export TZ=${settings.TZ}
       export TZDIR=/usr/share/zoneinfo
       set -o vi
@@ -63,10 +64,11 @@ in
   // import (./nixvim) { inherit pkgs settings; };
 
   home.packages = with pkgs; [
-    nixfmt-rfc-style
-    maestral
-    tmux
     gh
+    maestral
+    nixfmt
+    pass
+    tmux
   ];
 
   # in the form "<conf file>".text = "x"

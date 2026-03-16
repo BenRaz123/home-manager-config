@@ -40,6 +40,7 @@ usage() {
 		  $(c cyan bold)-U$(c), $(c cyan bold)--force-user-ns$(c)   force user namespaces instead of using sudo
 		  $(c cyan bold)-S$(c), $(c cyan bold)--force-sudo$(c)      force sudo instead of user namespaces
 		  $(c cyan bold)-h$(c), $(c cyan bold)--help$(c)            display this page
+		  $(c cyan bold)-s$(c), $(c cyan bold)--setup$(c)           setup some key services
 	_EOF
 }
 
@@ -87,6 +88,45 @@ run() {
 	cat "$out"
 	return 0
 
+}
+
+get_file() {
+	local prompt="$1"	
+	read -p "$(c bold magenta)$prompt>$(c) " res
+	if [ ! -f "$res" ]; then
+		error "file \"$res\" does not exist!"
+		get_file "$prompt"
+	fi
+}
+
+setup() {
+  info "setting up maestral"
+  maestral auth link
+  maestral start
+
+  info "github authentication"
+  gh auth login
+
+  info "importing key"
+  local pub=$(get_file "Public Key Path")
+  local priv=$(get_file "Secret Key Path")
+  read -p "Key ID> " id
+  gpg --import "$pub" "$priv"
+	info "setting trust to 5 on key"
+	gpg --command-fd 0 --edit-key "Ben Raz" <<EOF
+trust
+5
+y
+quit
+EOF
+	
+	if [ ! -d "$HOME/.password-store" ]; then
+		info "cloning benraz123/passwordstore"
+		git clone "https://github.com/benraz123/passwordstore" "$HOME/.password-store"
+	fi
+	pass init "$id"
+
+	info "done!"
 }
 
 check_for_cmd() {
@@ -236,7 +276,7 @@ main() {
 	follow_up "done"
 }
 
-if ! opts="$(getopt -o :hSU --long help,force-sudo,force-user-ns -n "$1" -- "$@")"; then
+if ! opts="$(getopt -o :hsSU --long help,force-sudo,force-user-ns,setup -n "$1" -- "$@")"; then
 	err "invalid flag given"
 	echo
 	usage
@@ -250,6 +290,11 @@ while true; do
 		usage
 		shift
 		exit 0
+		;;
+	-s | --setup)
+		setup
+		exit
+		shift
 		;;
 	-S | --force-sudo)
 		force_sudo=$TRUE
