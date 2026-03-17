@@ -41,6 +41,7 @@ usage() {
 		  $(c cyan bold)-S$(c), $(c cyan bold)--force-sudo$(c)      force sudo instead of user namespaces
 		  $(c cyan bold)-h$(c), $(c cyan bold)--help$(c)            display this page
 		  $(c cyan bold)-s$(c), $(c cyan bold)--setup$(c)           setup some key services
+		  $(c cyan bold)-a$(c), $(c cyan bold)--also-setup$(c)      setup home manager + key services
 	_EOF
 }
 
@@ -282,12 +283,14 @@ main() {
 	follow_up "done"
 }
 
-if ! opts="$(getopt -o :hsSU --long help,force-sudo,force-user-ns,setup -n "$1" -- "$@")"; then
+if ! opts="$(getopt -o :hsSUa --long help,force-sudo,force-user-ns,setup,also-setup -n "$1" -- "$@")"; then
 	err "invalid flag given"
 	echo
 	usage
 	exit 1
 fi
+
+also_setup=$FALSE
 
 eval set -- "$opts"
 while true; do
@@ -300,6 +303,10 @@ while true; do
 	-s | --setup)
 		setup
 		exit
+		shift
+		;;
+	-a | --also-setup)
+		also_setup=$TRUE
 		shift
 		;;
 	-S | --force-sudo)
@@ -345,3 +352,4 @@ else
 fi
 
 main
+(($also_setup)) && setup
