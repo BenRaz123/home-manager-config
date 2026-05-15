@@ -38,7 +38,7 @@ in
       ];
     };
 
-    VERSION = "25.05";
+    VERSION = "25.11";
 
     USER = "ben";
 

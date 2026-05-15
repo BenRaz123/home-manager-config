@@ -18,6 +18,8 @@ let
   };
 in
 {
+    enable = true;
+    defaultEditor = true;
   clipboard.register = "unnamedplus";
   opts = {
     tabstop = settings.TAB_WIDTH;

@@ -2,11 +2,13 @@
   config,
   pkgs ? import <nixpkgs> { },
   lib ? pkgs.lib,
+  osConfig ? { },
   ...
 }:
 let
   settings =
     (lib.evalModules {
+      specialArgs = { inherit pkgs; };
       modules = [
         ./settings/options.nix
         ./settings/settings.nix
@@ -23,58 +25,32 @@ in
   imports = [
     nixvim.homeModules.nixvim
   ];
+  home.pointerCursor = {
+    gtk.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Ice";
+    size = 20;
+  };
+  programs = import ./programs { inherit pkgs settings; };
 
   home.username = settings.USER;
   home.homeDirectory = "/home/${settings.USER}";
 
   home.stateVersion = settings.VERSION;
 
-  programs.git = {
-    enable = true;
-    settings = {
-      user.name = "BenRaz123";
-      user.email = "ben.raz2008@gmail.com";
-    };
-  };
-
-  programs.bash = {
-    enable = true;
-    shellAliases = {
-      gm = "mutt -F ~/.mutt/school.muttrc";
-      Gm = "mutt -F ~/.mutt/personal.muttrc";
-    };
-    sessionVariables = {
-      COLOR_START = ''\e[92m'';
-      COLOR_END = ''\e[0m'';
-      PS1 = ''[HM2 \u@\h $COLOR_START\w$COLOR_END]\$ '';
-    };
-    initExtra = ''
-	. "$HOME/.nix-profile/etc/profile.d/nix.sh"
-      export TZ=${settings.TZ}
-      export TZDIR=/usr/share/zoneinfo
-      set -o vi
-    '';
-  };
-
-  programs.nixvim = {
-    enable = true;
-    defaultEditor = true;
-    clipboard.register = "unnamedplus";
-  }
-  // import (./nixvim) { inherit pkgs settings; };
-
   home.packages = with pkgs; [
-    gh
+    chromium
+    fish
+    gnupg
     maestral
     nixfmt
     pass
+    pinentry-all
+    qutebrowser
     tmux
   ];
 
   # in the form "<conf file>".text = "x"
-  home.file = {
-    ".config/nix/nix.conf".text = "experimental-features = nix-command";
-  };
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
@@ -96,9 +72,9 @@ in
     MANPAGER = "nvim +Man!";
     TZ = settings.TZ;
     TZDIR = "/usr/share/zoneinfo";
-    X =5;
+    EDITOR = "nvim";
+    X = 5;
   };
 
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
 }
+#// import ./wayland.nix { inherit pkgs osConfig; }

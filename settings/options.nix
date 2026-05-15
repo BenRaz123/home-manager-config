@@ -1,4 +1,5 @@
 {
+  pkgs,
   lib,
   ...
 }:
@@ -12,6 +13,10 @@ let
 in
 {
   options = {
+    shell = lib.mkOption {
+      type = lib.types.str;
+      default = "${pkgs.bash}/bin/bash";
+    };
     org.enable = mkBool false;
     org.useDropbox = mkBool false;
     org.plannerCaptures = lib.mkOption {

@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 TRUE=1
 FALSE=0
@@ -110,10 +110,6 @@ get_file() {
 }
 
 setup() {
-  info "setting up maestral"
-  maestral auth link
-  maestral start
-
   info "github authentication"
   gh auth login
 
@@ -132,6 +128,10 @@ setup() {
   	git clone "https://github.com/benraz123/passwordstore" "$HOME/.password-store"
   fi
   pass init "$id"
+
+  info "setting up maestral"
+  maestral auth link
+  maestral start
   
   info "done!"
 }
