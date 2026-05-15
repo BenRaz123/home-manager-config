@@ -33,7 +33,7 @@ in
   };
   programs = import ./programs { inherit pkgs settings; };
 
-  home.username = settings.USER;
+  home.username = lib.mkDefault settings.USER;
   home.homeDirectory = "/home/${settings.USER}";
 
   home.stateVersion = settings.VERSION;
