@@ -11,14 +11,23 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
   };
   outputs =
-    inputs@{ nixpkgs, home-manager, ... }:
-    {
+    inputs@{
+      nixpkgs,
+      home-manager,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (system: {
       homeConfigurations.ben = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {};
+        pkgs = import nixpkgs { inherit system; };
         extraSpecialArgs = { inherit inputs; };
         modules = [ ./home.nix ];
       };
-    };
+    });
 }
