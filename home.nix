@@ -3,6 +3,7 @@
   pkgs ? import <nixpkgs> { },
   lib ? pkgs.lib,
   osConfig ? { },
+  inputs ? null,
   ...
 }:
 let
@@ -14,7 +15,7 @@ let
         ./settings/settings.nix
       ];
     }).config;
-  nixvim = import (
+  nixvim = if (inputs ? nixvim) then inputs.nixvim else import (
     builtins.fetchGit {
       url = "https://github.com/nix-community/nixvim";
       ref = if settings.VERSION != "unstable" then "nixos-${settings.VERSION}" else "main";
