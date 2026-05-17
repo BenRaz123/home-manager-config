@@ -23,11 +23,12 @@
       flake-utils,
       ...
     }:
-    flake-utils.lib.eachDefaultSystem (system: {
+    { homeModules.ben = ./home.nix; }// flake-utils.lib.eachDefaultSystem (system: {
       homeConfigurations.ben = home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs { inherit system; };
         extraSpecialArgs = { inherit inputs; };
         modules = [ ./home.nix ];
       };
+
     });
 }
