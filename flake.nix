@@ -16,7 +16,7 @@
     inputs@{ nixpkgs, home-manager, ... }:
     {
       homeConfigurations.ben = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs;
+        pkgs = import nixpkgs {};
         extraSpecialArgs = { inherit inputs; };
         modules = [ ./home.nix ];
       };
