@@ -23,7 +23,8 @@ let
     '';
 in
 {
-  config = {
+  config.settings = {
+    shell = "${pkgs.bash}/bin/bash";
     org = {
       enable = true;
       useDropbox = true;

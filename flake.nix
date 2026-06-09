@@ -23,12 +23,21 @@
       flake-utils,
       ...
     }:
-    { homeModules.ben = ./home.nix; }// flake-utils.lib.eachDefaultSystem (system: {
-      homeConfigurations.ben = home-manager.lib.homeManagerConfiguration {
+    {
+      homeModules.ben = ./home.nix;
+    }
+    // flake-utils.lib.eachDefaultSystem (
+      system:
+      let
         pkgs = import nixpkgs { inherit system; };
-        extraSpecialArgs = { inherit inputs; };
-        modules = [ ./home.nix ];
-      };
-
-    });
+      in
+      {
+        homeConfigurations.ben = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit inputs; };
+          modules = [ ./home.nix ];
+        };
+        formatter = pkgs.nixfmt-tree;
+      }
+    );
 }

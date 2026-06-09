@@ -1,19 +1,21 @@
-{ settings }:
+{ config, ... }:
 {
-  enable = true;
-  shellAliases = {
-    gm = "mutt -F ~/.mutt/school.muttrc";
-    Gm = "mutt -F ~/.mutt/personal.muttrc";
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      gm = "mutt -F ~/.mutt/school.muttrc";
+      Gm = "mutt -F ~/.mutt/personal.muttrc";
+    };
+    sessionVariables = {
+      COLOR_START = ''\e[92m'';
+      COLOR_END = ''\e[0m'';
+      PS1 = ''[\u@\h $COLOR_START\w$COLOR_END]\$ '';
+    };
+    initExtra = ''
+      #."$HOME/.nix-profile/etc/profile.d/nix.sh"
+      export TZ=${config.settings.TZ}
+      export TZDIR=/usr/share/zoneinfo
+      set -o vi
+    '';
   };
-  sessionVariables = {
-    COLOR_START = ''\e[92m'';
-    COLOR_END = ''\e[0m'';
-    PS1 = ''[\u@\h $COLOR_START\w$COLOR_END]\$ '';
-  };
-  initExtra = ''
-    #."$HOME/.nix-profile/etc/profile.d/nix.sh"
-    export TZ=${settings.TZ}
-    export TZDIR=/usr/share/zoneinfo
-    set -o vi
-  '';
 }

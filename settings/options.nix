@@ -12,7 +12,7 @@ let
     };
 in
 {
-  options = {
+  options.settings = {
     shell = lib.mkOption {
       type = lib.types.str;
       default = "${pkgs.bash}/bin/bash";
