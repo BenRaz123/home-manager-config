@@ -16,6 +16,7 @@
       set -g window-status-current-format "#[bold]#[fg=blue][#I]"
       set -g status-right "#(date -I) (#(fish -c get_batt)%) #[fg=green,bold]<#S>#[nobold,fg=white]"
       set -g status-position top
+      set -as terminal-features ",*:256,RGB"
 
       bind h select-pane -L
       bind j select-pane -D
