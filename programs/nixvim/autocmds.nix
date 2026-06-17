@@ -15,6 +15,12 @@ in
       if client.supports_method(client, "textDocument/formatting") then
         vim.lsp.buf.format()
       end
+
+      local fp = vim.bo.formatprg
+
+      if fp ~= "" then
+        vim.cmd("%!" .. fp)
+      end
     '')
     (mkAutoCmdCb [ "BufRead" "BufNewFile" ] "*.lua" ''
       vim.keymap.set("ia", "!=", "~=", {buffer=args.buf})
