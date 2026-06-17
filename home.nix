@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  osConfig ? null,
   inputs ? null,
   ...
 }:
@@ -11,7 +12,7 @@ let
       inputs.nixvim
     else
       import (
-        builtins.fetchGit {
+        fetchGit {
           url = "https://github.com/nix-community/nixvim";
           ref = if config.settings.VERSION != "unstable" then "nixos-${config.settings.VERSION}" else "main";
         }
@@ -50,13 +51,33 @@ in
     ]
     ++ [ config.programs.password-store.package ];
 
-  home.sessionVariables = {
-    inherit (config.settings)
-      TZ
-      ;
-    MANPAGER = "nvim +Man!";
-    TZDIR = "/usr/share/zoneinfo";
-    EDITOR = "nvim";
-    X = 5;
-  };
+  home.sessionVariables =
+    let
+      getChain =
+        obj: props:
+        if props == [ ] then
+          obj
+        else
+          let
+            prop = builtins.head props;
+            rest = builtins.tail props;
+            obj' = obj.${prop} or null;
+          in
+          if obj' == null then null else getChain obj' rest;
+
+      osTZDIR = getChain osConfig [
+        "environment"
+        "sessionVariables"
+        "TZDIR"
+      ];
+    in
+    {
+      inherit (config.settings)
+        TZ
+        ;
+      MANPAGER = "nvim +Man!";
+      TZDIR = if osTZDIR != null then osTZDIR else "/usr/share/zoneinfo";
+      EDITOR = "nvim";
+      X = 5;
+    };
 }

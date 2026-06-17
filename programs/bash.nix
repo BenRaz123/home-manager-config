@@ -14,7 +14,6 @@
     initExtra = ''
       #."$HOME/.nix-profile/etc/profile.d/nix.sh"
       export TZ=${config.settings.TZ}
-      export TZDIR=/usr/share/zoneinfo
       set -o vi
     '';
   };
