@@ -9,6 +9,10 @@ let
 in
 {
   programs.nixvim.plugins = {
+    treesitter = {
+      enable = true;
+      highlight.enable = true;
+    };
     orgmode =
       if org.enable then
         {

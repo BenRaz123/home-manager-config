@@ -11,12 +11,10 @@ let
     if (inputs ? nixvim) then
       inputs.nixvim
     else
-      import (
-        fetchGit {
-          url = "https://github.com/nix-community/nixvim";
-          ref = if config.settings.VERSION != "unstable" then "nixos-${config.settings.VERSION}" else "main";
-        }
-      );
+      import (fetchGit {
+        url = "https://github.com/nix-community/nixvim";
+        ref = if config.settings.VERSION != "unstable" then "nixos-${config.settings.VERSION}" else "main";
+      });
 in
 {
   imports = [

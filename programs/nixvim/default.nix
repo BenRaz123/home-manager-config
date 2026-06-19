@@ -7,6 +7,8 @@
     ./opts.nix
     ./plugins.nix
     ./vimlib.nix
+
+    ./ft
   ];
 
   programs.nixvim = {
